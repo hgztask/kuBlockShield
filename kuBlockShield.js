@@ -103,34 +103,35 @@ const remove = {
 
 
 const shield = {
+    fuzzyMatching:function (arr,element, key) {
+        const content = remove.shieldArrContent(arr, key);
+        if (content === null) {
+            return false;
+        }
+        element.remove();
+        return content;
+    },
     /**
      * 根据用户名屏蔽元素，当用户名完全匹配规则时屏蔽
      * @param element
      * @param name
      * @returns {boolean}
      */
-    name: function (element, name) {
-        if (remove.shieldArrKey(rule.nameArr, name)) {
+    name: function (element, key) {
+        if (remove.shieldArrKey(rule.nameArr, key)) {
             element.remove();
             return true;
         }
         return false;
     },
-    nameKey: function (element, name) {
-        const content = remove.shieldArrContent(rule.nameKeyArr, name);
-        if (content === null) {
-            return false;
-        }
-        element.remove();
-        return content;
+    nameKey: function (element, key) {
+        return this.fuzzyMatching(rule.nameKeyArr, element, key);
     },
-    contentPreviewKey: function (element, name) {
-        const content = remove.shieldArrContent(rule.contentPreview, name);
-        if (content === null) {
-            return false;
-        }
-        element.remove();
-        return content;
+    contentPreviewKey: function (element, key) {
+        return this.fuzzyMatching(rule.contentPreview, element, key);
+    },
+    titleKey:function (element, key) {
+        return this.fuzzyMatching(rule.titleKeyArr, element, key);
     }
 
 
@@ -162,6 +163,11 @@ function sheInvitation() {
             }
             if (shield.name(e, name)) {//是否是和名单用户
                 console.log(`已通过用户名 屏蔽name=${name}  title=${title} 预览内容=${content}  内容是否是纯图片=${isContentPicture}`)
+                continue;
+            }
+            const titleKey = shield.titleKey(e,title);
+            if (titleKey !== null) {
+                console.log(`已通过标题关键词${titleKey} 屏蔽name=${name}  title=${title} 预览内容=${content}  内容是否是纯图片=${isContentPicture}`)
                 continue;
             }
             const nameKey = shield.nameKey(e, name);
