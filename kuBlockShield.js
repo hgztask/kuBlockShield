@@ -106,7 +106,7 @@ const shield = {
     fuzzyMatching:function (arr,element, key) {
         const content = remove.shieldArrContent(arr, key);
         if (content === null) {
-            return false;
+            return null;
         }
         element.remove();
         return content;
